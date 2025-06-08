@@ -98,6 +98,10 @@ void GymFactory::String2Gym(string gymName, string shmName, int version)
 		gym = &RLGoliathVsGoliath::Instance(shmName);
 		mapName = "goliath3vs3.scm";
 	}
+	else if (gymNameStr == "melee") {
+		gym = &melee::Instance(shmname);
+		mapName = "melee_v0.scx"
+	}
 }
 
 GymFactory &BWML::GymFactory::Instance()
