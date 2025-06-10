@@ -190,7 +190,7 @@ class PPOAgent(Agent):
 
         return loss
 
-    def load_weights(self, file_path, filename):
+    def load_weights(self, file_path):
         self.actor.load_weights(file_path[0])
         self.critic.load_weights(file_path[1])
 

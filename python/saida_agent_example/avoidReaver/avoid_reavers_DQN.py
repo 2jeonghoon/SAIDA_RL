@@ -25,14 +25,14 @@ import math
 
 NO_GUI = True
 DISCOUNT_FACTOR = 0.99
-ENABLE_DOUBLE = False
-ENABLE_DUELING = False
+ENABLE_DOUBLE = True
+ENABLE_DUELING = True
 BATCH_SIZE = 256
-REPLAY_BUFFER_SIZE = 100000
-LEARNING_RATE = 0.0005
+REPLAY_BUFFER_SIZE = 10000
+LEARNING_RATE = 1e-4
 TARGET_MODEL_UPDATE_INTERVAL = 100
 WINDOW_LENGTH = 1
-MAX_STEP_CNT = 3000000
+MAX_STEP_CNT = 50000
 STATE_SIZE = 8 + 3 * 8
 
 
@@ -146,12 +146,12 @@ class ReaverProcessor(Processor):
 
 
 if __name__ == '__main__':
-    training_mode = True
-    load_model = False
+    training_mode = False
+    load_model = True
     FILE_NAME = os.path.basename(__file__).split('.')[0]
     action_type = 0
     # todo : need to substitute it with env.make() and also remove other parameters such as protobuf_name & verbose!?
-    env = AvoidReavers(move_angle=15, move_dist=2, frames_per_step=16, verbose=0, action_type=action_type)
+    env = AvoidReavers(move_angle=10, move_dist=2, frames_per_step=16, verbose=0, action_type=action_type)
 
     try:
 
@@ -159,7 +159,7 @@ if __name__ == '__main__':
         action_size = env.action_space.n
 
         model = Sequential()
-        model.add(Reshape((state_size*WINDOW_LENGTH,), input_shape=(WINDOW_LENGTH, state_size)))
+        model.add(Reshape((state_size,), input_shape=(1, state_size)))
         model.add(Dense(50, input_dim=state_size*WINDOW_LENGTH, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(50, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(50, activation='relu', kernel_initializer='he_uniform'))
@@ -169,7 +169,7 @@ if __name__ == '__main__':
 
         memory = SequentialMemory(limit=REPLAY_BUFFER_SIZE, window_length=WINDOW_LENGTH, enable_per=False, per_alpha=0.6)
 
-        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=.05, nb_steps=400000)
+        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=.05, nb_steps=MAX_STEP_CNT)
         test_policy = GreedyQPolicy()
 
         agent = DQNAgent(model, action_size, memory, processor=ReaverProcessor(), policy=policy, test_policy=test_policy
@@ -187,8 +187,8 @@ if __name__ == '__main__':
             # h5f = 'vulture_vs_zealot_v0_DQN_double_False_dueling_True_batch_size_128_repm_size_200000_lr_0.001_tn_u_invl_100_window_length_2'
             # agent.load_weights(os.path.realpath('save_model/' + h5f + '.h5f'))
         else:
-            h5f = ''
-            agent.load_weights(os.path.realpath('../../save_model/' + h5f + '.h5f'))
+            h5f = 'DQN3'
+            agent.load_weights(os.path.realpath('../../save_model/'+ h5f + '.h5f'))
 
         agent.run(env, MAX_STEP_CNT, train_mode=training_mode, verbose=2, callbacks=callbacks)
 

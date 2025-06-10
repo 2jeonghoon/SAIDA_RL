@@ -208,7 +208,7 @@ def build_critic(state_size):
 
 
 if __name__ == '__main__':
-    training_mode = True
+    training_mode = False
     load_model = False
     FILE_NAME = os.path.basename(__file__).split('.')[0] + "-" + datetime.now().strftime("%m%d%H%M%S")
     action_type = 0
@@ -237,7 +237,24 @@ if __name__ == '__main__':
 
     agent.compile(optimizer=[Adam(lr=LR), Adam(lr=LR)], metrics=[ADVANTAGE, OLD_PREDICTION])
 
-    cb_plot = DrawTrainMovingAvgPlotCallback(os.path.realpath('../../save_graph/' + FILE_NAME + '_'+post_fix + '.png'), 10, 5, l_label=['episode_reward'])
+    cb_plot = DrawTrainMovingAvgPlotCallback(
+            os.path.realpath('../../save_graph/' + FILE_NAME + '.png'), 5, 5, l_label=['episode_reward'])
+
+    if not training_mode:
+        # 불러올 모델의 기본 이름
+        model_base_name = 'PPO'
+        # 모델이 저장된 폴더 경로
+        save_dir = os.path.realpath('../../save_model/')
+
+        # Actor와 Critic 모델 파일의 전체 경로를 각각 생성합니다.
+        actor_model_path = os.path.join(save_dir, model_base_name + '_actor.h5f')
+        critic_model_path = os.path.join(save_dir, model_base_name + '_critic.h5f')
+
+        print("Loading actor model from:", actor_model_path)
+        print("Loading critic model from:", critic_model_path)
+
+        # 두 파일 경로를 리스트에 담아 load_weights 함수에 전달합니다.
+        agent.load_weights([actor_model_path, critic_model_path])
 
     agent.run(env, NB_STEPS, train_mode=training_mode, verbose=2, callbacks=[cb_plot], action_repetition=1, nb_episodes=1000)
 

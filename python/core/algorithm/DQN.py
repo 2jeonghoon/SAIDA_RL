@@ -174,7 +174,7 @@ class DQNAgent(Agent):
         # Book-keeping.
         self.recent_observation = observation
         self.recent_action = actions
-
+        
         return actions
 
     def append_replay_memory(self, reward, terminal):
