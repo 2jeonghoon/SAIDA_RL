@@ -29,7 +29,7 @@ ENABLE_DOUBLE = True
 ENABLE_DUELING = True
 BATCH_SIZE = 256
 REPLAY_BUFFER_SIZE = 10000
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-5
 TARGET_MODEL_UPDATE_INTERVAL = 100
 WINDOW_LENGTH = 1
 MAX_STEP_CNT = 50000
@@ -77,7 +77,8 @@ def reward_reshape(reward):
     elif reward == -1:
         reward = -10
     elif reward == 1:
-        reward = 10
+        reward = 1000000
+        print(reward)
     elif reward == 0:
         reward = -0.1
 
@@ -146,7 +147,7 @@ class ReaverProcessor(Processor):
 
 
 if __name__ == '__main__':
-    training_mode = False
+    training_mode = True
     load_model = True
     FILE_NAME = os.path.basename(__file__).split('.')[0]
     action_type = 0
@@ -169,7 +170,7 @@ if __name__ == '__main__':
 
         memory = SequentialMemory(limit=REPLAY_BUFFER_SIZE, window_length=WINDOW_LENGTH, enable_per=False, per_alpha=0.6)
 
-        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=.05, nb_steps=MAX_STEP_CNT)
+        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=.05, nb_steps=MAX_STEP_CNT*0.8)
         test_policy = GreedyQPolicy()
 
         agent = DQNAgent(model, action_size, memory, processor=ReaverProcessor(), policy=policy, test_policy=test_policy
@@ -187,7 +188,7 @@ if __name__ == '__main__':
             # h5f = 'vulture_vs_zealot_v0_DQN_double_False_dueling_True_batch_size_128_repm_size_200000_lr_0.001_tn_u_invl_100_window_length_2'
             # agent.load_weights(os.path.realpath('save_model/' + h5f + '.h5f'))
         else:
-            h5f = 'DQN3'
+            h5f = 'DQN_1000_300000'
             agent.load_weights(os.path.realpath('../../save_model/'+ h5f + '.h5f'))
 
         agent.run(env, MAX_STEP_CNT, train_mode=training_mode, verbose=2, callbacks=callbacks)

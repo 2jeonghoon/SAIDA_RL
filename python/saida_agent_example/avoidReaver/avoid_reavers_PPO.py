@@ -96,7 +96,7 @@ def reward_reshape(reward):
     elif reward == -1:
         reward = -10
     elif reward == 1:
-        reward = 10
+        reward = 1000
     elif reward == 0:
         reward = -0.1
 
@@ -208,7 +208,7 @@ def build_critic(state_size):
 
 
 if __name__ == '__main__':
-    training_mode = False
+    training_mode = True
     load_model = False
     FILE_NAME = os.path.basename(__file__).split('.')[0] + "-" + datetime.now().strftime("%m%d%H%M%S")
     action_type = 0

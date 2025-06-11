@@ -209,6 +209,8 @@ class Agent(object):
                 # Force a terminal state.
                 done = True
 
+                continue
+
             self.append_replay_memory(reward, terminal=done)
 
             if train_mode:
